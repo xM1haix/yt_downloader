@@ -3,29 +3,24 @@ import "dart:io";
 import "package:flutter/material.dart";
 import "package:youtube_explode_dart/youtube_explode_dart.dart";
 
+///test path for download
 const outputPath =
     "/home/xM1haix/Desktop/projects/flutter/yt_downloader/test.mp4";
+
+///test Uri for a YT video
 const videoUrl = "https://www.youtube.com/watch?v=Mf_pvNkNJjk";
 
+///[Future] which should download the video
 Future<void> download() async {
   final ytExplode = YoutubeExplode();
 
   try {
-    // Get video info
     final video = await ytExplode.videos.get(videoUrl);
-
-    // Get manifest for streams
     final manifest = await ytExplode.videos.streamsClient.getManifest(video.id);
-
-    // Select audio-only and video streams (you can customize this selection)
     final audioStreamInfo = manifest.audioOnly.first;
     final videoStreamInfo = manifest.video.first;
-
-    // Get stream data as byte streams
     final audioStream = ytExplode.videos.streamsClient.get(audioStreamInfo);
     final videoStream = ytExplode.videos.streamsClient.get(videoStreamInfo);
-
-    // Save audio
     final audioFile = File(
       "${outputPath}_audio.${audioStreamInfo.container.name}",
     );
@@ -33,8 +28,6 @@ Future<void> download() async {
     await audioStream.pipe(audioFileStream);
     await audioFileStream.flush();
     await audioFileStream.close();
-
-    // Save video
     final videoFile = File(
       "${outputPath}_video.${videoStreamInfo.container.name}",
     );
@@ -42,7 +35,6 @@ Future<void> download() async {
     await videoStream.pipe(videoFileStream);
     await videoFileStream.flush();
     await videoFileStream.close();
-
     debugPrint("Download complete!");
   } catch (e) {
     debugPrint("Error during download: $e");
@@ -51,7 +43,9 @@ Future<void> download() async {
   }
 }
 
+///Home page
 class Home extends StatefulWidget {
+  ///
   const Home({super.key});
 
   @override
